@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 
 class Form extends React.Component {
   constructor() {
@@ -16,6 +17,15 @@ class Form extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
+    axios
+      .post('http://localhost:4000/', {
+        name: this.state.yourName,
+        message: this.state.message
+      })
+      .then(() => {
+        console.log('work');
+      })
+      .catch(err => console.log(err));
   };
 
   render() {

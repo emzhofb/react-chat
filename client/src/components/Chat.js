@@ -5,35 +5,30 @@ class Chat extends React.Component {
   constructor() {
     super();
     this.state = {
-      message: []
+      chat: []
     };
   }
 
   componentDidMount() {
     axios
-      .get('http://localhost:4000/', {
-        headers: {
-          'Access-Control-Allow-Origin': '*'
-        }
-      })
+      .get('http://localhost:4000/')
       .then(res => {
-        console.log(res);
+        this.setState({ chat: [...res.data] });
       })
       .catch(err => console.log(err));
   }
 
   render() {
-    return (
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">Card title</h5>
-          <p className="card-text">
-            This is a wider card with supporting text below as a natural lead-in
-            to additional content. This content is a little bit longer.
-          </p>
+    return this.state.chat.map((chats, index) => {
+      return (
+        <div className="card" key={index}>
+          <div className="card-body">
+            <h5 className="card-title">{chats.name}</h5>
+            <p className="card-text">{chats.message}</p>
+          </div>
         </div>
-      </div>
-    );
+      );
+    });
   }
 }
 

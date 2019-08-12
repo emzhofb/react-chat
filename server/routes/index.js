@@ -18,7 +18,6 @@ router.post('/', (req, res, next) => {
   chat
     .save()
     .then(data => {
-      console.log(data);
       res.status(201).json(data);
     })
     .catch(err => console.log(err));
