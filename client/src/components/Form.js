@@ -1,13 +1,16 @@
 import React from 'react';
 import axios from 'axios';
+import Chat from './Chat';
+import Title from './Title';
 
 class Form extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      yourName: '',
+      name: '',
       message: ''
     };
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleChange = e => {
@@ -19,36 +22,47 @@ class Form extends React.Component {
     e.preventDefault();
     axios
       .post('http://localhost:4000/', {
-        name: this.state.yourName,
+        name: this.state.name,
         message: this.state.message
       })
       .then(() => {
-        console.log('work');
+        this.setState({
+          name: '',
+          message: ''
+        });
       })
       .catch(err => console.log(err));
   };
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <input
-          type="text"
-          name="yourName"
-          value={this.state.yourName}
-          className="form-control"
-          placeholder="your name"
-          onChange={this.handleChange}
-        />
-        <textarea
-          id="validationTextarea"
-          name="message"
-          value={this.state.message}
-          className="form-control"
-          placeholder="write your chat here..."
-          onChange={this.handleChange}
-        />
-        <button className="col-sm-1 btn btn-primary form-control">Send</button>
-      </form>
+      <div>
+        <Title />
+        <br />
+        <Chat />
+        <br />
+        <form onSubmit={this.handleSubmit}>
+          <input
+            type="text"
+            name="name"
+            value={this.state.name}
+            className="form-control"
+            placeholder="your name"
+            onChange={this.handleChange}
+          />
+          <textarea
+            type="text"
+            name="message"
+            value={this.state.message}
+            className="form-control"
+            placeholder="write your chat here..."
+            onChange={this.handleChange}
+          />
+          <button className="col-sm-1 btn btn-primary form-control">
+            Send
+          </button>
+        </form>
+      </div>
     );
   }
 }
