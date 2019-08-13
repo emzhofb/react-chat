@@ -1,16 +1,26 @@
 import React from 'react';
 import axios from 'axios';
-import Chat from './Chat';
 import Title from './Title';
+import { mdReact } from 'markdown-react-js';
 
 class Form extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       name: '',
-      message: ''
+      message: '',
+      chat: []
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    axios
+      .get('http://localhost:4000/')
+      .then(res => {
+        this.setState({ chat: [...res.data] });
+      })
+      .catch(err => console.log(err));
   }
 
   handleChange = e => {
@@ -27,6 +37,10 @@ class Form extends React.Component {
       })
       .then(() => {
         this.setState({
+          chat: [
+            ...this.state.chat,
+            { name: this.state.name, message: this.state.message }
+          ],
           name: '',
           message: ''
         });
@@ -39,7 +53,17 @@ class Form extends React.Component {
       <div>
         <Title />
         <br />
-        <Chat />
+        {this.state.chat.map((chats, index) => {
+          const chat = mdReact()(chats.message);
+          return (
+            <div className="card" key={index}>
+              <div className="card-body">
+                <h5 className="card-title">{chats.name}</h5>
+                <p className="card-text">{chat}</p>
+              </div>
+            </div>
+          );
+        })}
         <br />
         <form onSubmit={this.handleSubmit}>
           <input
