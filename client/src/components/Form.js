@@ -60,11 +60,6 @@ class Form extends React.Component {
         });
       })
       .catch(err => console.log(err));
-
-    this.setState({
-      name: '',
-      message: ''
-    });
   };
 
   render() {
