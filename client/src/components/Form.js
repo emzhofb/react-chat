@@ -1,5 +1,5 @@
 import React from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 import openSocket from 'socket.io-client';
 import { mdReact } from 'markdown-react-js';
 import Title from './Title';
@@ -16,12 +16,6 @@ class Form extends React.Component {
   }
 
   componentDidMount() {
-    // axios
-    //   .get('http://localhost:4000/')
-    //   .then(res => {
-    //     this.setState({ chat: [...res.data] });
-    //   })
-    //   .catch(err => console.log(err));
     const socket = openSocket('http://localhost:4000/');
     socket.on('receive-message', msg => {
       this.state.chat.push(msg);
@@ -29,6 +23,13 @@ class Form extends React.Component {
         chat: this.state.chat
       });
     });
+
+    axios
+      .get('http://localhost:4000/')
+      .then(res => {
+        this.setState({ chat: [...res.data] });
+      })
+      .catch(err => console.log(err));
   }
 
   handleChange = e => {
@@ -46,24 +47,24 @@ class Form extends React.Component {
     const socket = openSocket('http://localhost:4000/');
     socket.emit('send-message', data);
 
+    axios
+      .post('http://localhost:4000/', data)
+      .then(() => {
+        this.setState({
+          chat: [
+            ...this.state.chat,
+            { name: this.state.name, message: this.state.message }
+          ],
+          name: '',
+          message: ''
+        });
+      })
+      .catch(err => console.log(err));
+
     this.setState({
       name: '',
       message: ''
     });
-
-    // axios
-    //   .post('http://localhost:4000/', data)
-    //   .then(() => {
-    //     this.setState({
-    //       chat: [
-    //         ...this.state.chat,
-    //         { name: this.state.name, message: this.state.message }
-    //       ],
-    //       name: '',
-    //       message: ''
-    //     });
-    //   })
-    //   .catch(err => console.log(err));
   };
 
   render() {
