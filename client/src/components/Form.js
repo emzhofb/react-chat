@@ -1,7 +1,8 @@
 import React from 'react';
-import axios from 'axios';
-import Title from './Title';
+// import axios from 'axios';
+import openSocket from 'socket.io-client';
 import { mdReact } from 'markdown-react-js';
+import Title from './Title';
 
 class Form extends React.Component {
   constructor(props) {
@@ -15,12 +16,19 @@ class Form extends React.Component {
   }
 
   componentDidMount() {
-    axios
-      .get('http://localhost:4000/')
-      .then(res => {
-        this.setState({ chat: [...res.data] });
-      })
-      .catch(err => console.log(err));
+    // axios
+    //   .get('http://localhost:4000/')
+    //   .then(res => {
+    //     this.setState({ chat: [...res.data] });
+    //   })
+    //   .catch(err => console.log(err));
+    const socket = openSocket('http://localhost:4000/');
+    socket.on('receive-message', msg => {
+      this.state.chat.push(msg);
+      this.setState({
+        chat: this.state.chat
+      });
+    });
   }
 
   handleChange = e => {
@@ -30,22 +38,32 @@ class Form extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    axios
-      .post('http://localhost:4000/', {
-        name: this.state.name,
-        message: this.state.message
-      })
-      .then(() => {
-        this.setState({
-          chat: [
-            ...this.state.chat,
-            { name: this.state.name, message: this.state.message }
-          ],
-          name: '',
-          message: ''
-        });
-      })
-      .catch(err => console.log(err));
+    const data = {
+      name: this.state.name,
+      message: this.state.message
+    };
+
+    const socket = openSocket('http://localhost:4000/');
+    socket.emit('send-message', data);
+
+    this.setState({
+      name: '',
+      message: ''
+    });
+
+    // axios
+    //   .post('http://localhost:4000/', data)
+    //   .then(() => {
+    //     this.setState({
+    //       chat: [
+    //         ...this.state.chat,
+    //         { name: this.state.name, message: this.state.message }
+    //       ],
+    //       name: '',
+    //       message: ''
+    //     });
+    //   })
+    //   .catch(err => console.log(err));
   };
 
   render() {
